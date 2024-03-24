@@ -133,7 +133,7 @@ public:
     void display() {
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < cols; j++) {
-                cout << "[" << (grid[i][j] != nullptr ? grid[i][j]->name : "none") << "]\t";
+                cout << "[" << (grid[i][j] != nullptr ? grid[i][j]->name : " ") << "]\t";
             }
             cout << endl;
         }
@@ -403,12 +403,13 @@ int main()
 {
     Player P;
     P.showEq();
-    P.displayShop();
-    // P.setMainWeapon(3, 4);
-    // P.setMainArmor(2, 1);
+    // P.displayShop();
+    P.buy("Boots");
+    P.setMainWeapon(0, 0);
+    P.setMainArmor(0, 3);
+    P.displayPlayerStats();
     // P.setMainWeapon(2, 0);
     // P.buy("Sword");
-    // P.buy("Boots");
     // P.sellItem("Boots");
     // P.move(0, 0, 3, 2);
     // P.move(0, 1, 2, 4);
