@@ -22,7 +22,7 @@ class Weapon : public Item {
 public:
     int damage;
     Weapon(string name, int price, int damage, int amount) : Item(name, price, amount), damage{damage} {}
-    
+
     void showDetails() {
         cout << "Name: " << name << ", Price: " << price << ", Damage: " << damage << ", Amount: " << amount << endl;
     }
@@ -32,7 +32,7 @@ class Armor : public Item {
 public:
     int protection;
     Armor(string name, int price, int protection, int amount) : Item(name, price, amount), protection{protection} {}
-    
+
     void showDetails() {
         cout << "Name: " << name << ", Price: " << price << ", Protection: " << protection << endl;
     }
@@ -42,7 +42,7 @@ class Food : public Item {
 public:
     int healing;
     Food(string name, int price, int healing, int amount) : Item(name, price, amount), healing{healing} {}
-    
+
     void showDetails() {
         cout << "Name: " << name << ", Price: " << price << ", Healing: " << healing << ", Amount: " << amount << endl;
     }
@@ -52,62 +52,54 @@ class Sword : public Weapon {
 public:
     Sword(string name, int price, int damage, int amount) : Weapon(name, price, damage, amount) {}
 };
-
 class Axe : public Weapon {
 public:
     Axe(string name, int price, int damage, int amount) : Weapon(name, price, damage, amount) {}
 };
-
 class Kilof : public Weapon {
 public:
     Kilof(string name, int price, int damage, int amount) : Weapon(name, price, damage, amount) {}
 };
-
 class Pan : public Weapon {
 public:
     Pan(string name, int price, int damage, int amount) : Weapon(name, price, damage, amount) {}
 };
 
+class Helmet : public Armor {
+public:
+    Helmet(string name, int price, int protection, int amount) : Armor(name, price, protection, amount) {}
+};
+class Chest : public Armor {
+public:
+    Chest(string name, int price, int protection, int amount) : Armor(name, price, protection, amount) {}
+};
+class Pants : public Armor {
+public:
+    Pants(string name, int price, int protection, int amount) : Armor(name, price, protection, amount) {}
+};
+class Boots : public Armor {
+public:
+    Boots(string name, int price, int protection, int amount) : Armor(name, price, protection, amount) {}
+};
 
 class Bread : public Food {
 public:
-    Bread(string name, int price, int amount) : Food(name, price, amount) {}
+    Bread(string name, int price, int healing, int amount) : Food(name, price, healing, amount) {}
 };
-
 class Steak : public Food {
 public:
-    Steak(string name, int price, int amount) : Food(name, price, amount) {}
+    Steak(string name, int price, int healing, int amount) : Food(name, price, healing, amount) {}
 };
-
 class Apples : public Food {
 public:
-    Apples(string name, int price, int amount) : Food(name, price, amount) {}
+    Apples(string name, int price, int healing, int amount): Food(name, price, healing, amount) {}
 };
-
 class Carrots : public Food {
 public:
-    Carrots(string name, int price, int amount) : Food(name, price, amount) {}
+    Carrots(string name, int price, int healing, int amount) : Food(name, price, healing, amount) {}
 };
 
-class Helmet : public Armor {
-public:
-    Helmet(string name, int price, int amount) : Armor(name, price, amount) {}
-};
 
-class Chest : public Armor {
-public:
-    Chest(string name, int price, int amount) : Armor(name, price, amount) {}
-};
-
-class Pants : public Armor {
-public:
-    Pants(string name, int price, int amount) : Armor(name, price, amount) {}
-};
-
-class Boots : public Armor {
-public:
-    Boots(string name, int price, int amount) : Armor(name, price, amount) {}
-};
 
 class Equipment {
     int rows;
@@ -231,7 +223,18 @@ public:
 
     void displayStock() {
         for (auto& item : stock) {
-            cout << item->name << " - Price: " << item->price << ", Amount: " << item->amount << endl;
+            Weapon* weapon = dynamic_cast<Weapon*>(item);
+            Armor* armor = dynamic_cast<Armor*>(item);
+            Food* food = dynamic_cast<Food*>(item);
+            if (weapon) {
+                cout << weapon->name << " - Price: " << weapon->price << ", Damage: " << weapon->damage << ", Amount: " << weapon->amount << endl;
+            }
+            else if (armor) {
+                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Amount: " << armor->amount << endl;
+            }
+            else if (food) {
+                cout << food->name << " - Price: " << food->price << ", Healing: " << food->healing << ", Amount: " << food->amount << endl;
+            }
         }
     }
 };
@@ -239,7 +242,7 @@ public:
 class Player {
     int HP;
     int gold;
-    
+
     Item* mainHand;
     Item* armor;
     Equipment* eq;
@@ -252,9 +255,9 @@ public:
         armor = nullptr;
         eq = new Equipment();
 
-        eq->grid[0][0] = new Sword("Sword", 15, 1);
-        eq->grid[0][1] = new Kilof("Kilof", 13, 1);
-        eq->grid[0][2] = new Carrots("Carrots", 3, 40);
+        eq->grid[0][0] = new Sword("Sword", 15, 13, 1);
+        eq->grid[0][1] = new Kilof("Kilof", 13, 9, 1);
+        eq->grid[0][2] = new Carrots("Carrots", 3, 3, 40);
     }
     void move(int row1, int col1, int row2, int col2) {
         Item* temp = eq->grid[row1][col1];
@@ -400,26 +403,18 @@ int main()
 {
     Player P;
     P.showEq();
-    // P.displayShop();
+    P.displayShop();
     // P.setMainWeapon(3, 4);
     // P.setMainArmor(2, 1);
-    P.buy("Sword");
-    P.buy("Armor");
-    // P.displayPlayerStats();
-    // P.sellItem("Armor");
-    // P.displayPlayerStats();
-    P.move(0, 0, 3, 2);
-    P.move(0, 1, 2, 4);
-    P.showEq();
-    // P.setMainWeapon(3, 4);
-    // P.setMainArmor(2, 1);
-    // P.displayPlayerStats();
     // P.setMainWeapon(2, 0);
-    // P.setMainArmor(2, 3);
-    // P.displayPlayerStats();
+    // P.buy("Sword");
+    // P.buy("Boots");
+    // P.sellItem("Boots");
+    // P.move(0, 0, 3, 2);
+    // P.move(0, 1, 2, 4);
     // P.showDetails("Carrots");
     // P.sortEquipment();
-    P.extendEq();
-    P.showEq();
+    // P.extendEq();
+    // P.showEq();
     return 0;
 }
