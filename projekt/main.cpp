@@ -286,10 +286,10 @@ class Shop {
 public:
     vector<Item*> stock;
     Shop() {
-        stock.push_back(new Sword("Sword", 15, 13, "Common", 1, 1));
-        stock.push_back(new Sword("Sword", 15, 13, "Rare", 1, 1));
-        stock.push_back(new Sword("Sword", 15, 13, "Epic", 1, 1));
-        stock.push_back(new Sword("Sword", 15, 13, "Legendary", 1, 1));
+        stock.push_back(new Sword("Sword", 15, 13, "Common", 1));
+        stock.push_back(new Sword("Sword", 15, 13, "Rare", 1));
+        stock.push_back(new Sword("Sword", 15, 13, "Epic", 1));
+        stock.push_back(new Sword("Sword", 15, 13, "Legendary", 1));
         stock.push_back(new Axe("Axe", 11, 12, 1));
         stock.push_back(new Kilof("Kilof", 13, 9, 1));
         stock.push_back(new Pan("Pan", 12, 8, 1));
