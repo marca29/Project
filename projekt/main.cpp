@@ -22,7 +22,7 @@ public:
     Item(string name) : name{name} {}
     Item(string name, int price) : name{name}, price{price} {}
     Item(string name, int price, int amount) : name{name}, price{price}, amount{amount} {}
-    Item(string name, int price, string rarity, int level, int amount) : name{name}, price{price}, rarity{rarity}, level{level}, amount{amount} {}
+    Item(string name, int price, string rarity, int level) : name{name}, price{price}, rarity{rarity}, level{level} {}
     virtual ~Item() {} //Wirtualny destruktor pozwala na właściwe usuwanie obiektów dziedziczących.
 
     void showDetails() const {
@@ -33,17 +33,17 @@ public:
 class Weapon : public Item {
 public:
     int damage;
-    Weapon(string name, int price, int damage, string rarity, int level, int amount) : Item(name, price, rarity, level, amount), damage{damage} {}
+    Weapon(string name, int price, int damage, string rarity, int level) : Item(name, price, rarity, level), damage{damage} {}
 
     void showDetails() const {
-        cout << "Name: " << name << ", Price: " << price << ", Damage: " << damage << ", Amount: " << amount << ", Rarity: " << rarity << ", Level: " << level << endl;
+        cout << "Name: " << name << ", Price: " << price << ", Damage: " << damage << ", Rarity: " << rarity << ", Level: " << level << endl;
     }
 };
 
 class Armor : public Item {
 public:
     int protection;
-    Armor(string name, int price, int protection, string rarity, int level, int amount) : Item(name, price, rarity, level, amount), protection{protection} {}
+    Armor(string name, int price, int protection, string rarity, int level) : Item(name, price, rarity, level), protection{protection} {}
 
     void showDetails() const {
         cout << "Name: " << name << ", Price: " << price << ", Protection: " << protection << ", Rarity: " << rarity << ", Level: " << level << endl;
@@ -62,36 +62,36 @@ public:
 
 class Sword : public Weapon {
 public:
-    Sword(string name, int price, int damage, string rarity, int level, int amount) : Weapon(name, price, damage, rarity, level, amount) {}
+    Sword(string name, int price, int damage, string rarity, int level) : Weapon(name, price, damage, rarity, level) {}
 };
 class Axe : public Weapon {
 public:
-    Axe(string name, int price, int damage, string rarity, int level, int amount) : Weapon(name, price, damage, rarity, level, amount) {}
+    Axe(string name, int price, int damage, string rarity, int level) : Weapon(name, price, damage, rarity, level) {}
 };
 class Kilof : public Weapon {
 public:
-    Kilof(string name, int price, int damage, string rarity, int level, int amount) : Weapon(name, price, damage, rarity, level, amount) {}
+    Kilof(string name, int price, int damage, string rarity, int level) : Weapon(name, price, damage, rarity, level) {}
 };
 class Pan : public Weapon {
 public:
-    Pan(string name, int price, int damage, string rarity, int level, int amount) : Weapon(name, price, damage, rarity, level, amount) {}
+    Pan(string name, int price, int damage, string rarity, int level) : Weapon(name, price, damage, rarity, level) {}
 };
 
 class Helmet : public Armor {
 public:
-    Helmet(string name, int price, int protection, string rarity, int level, int amount) : Armor(name, price, protection, rarity, level, amount) {}
+    Helmet(string name, int price, int protection, string rarity, int level) : Armor(name, price, protection, rarity, level) {}
 };
 class Chest : public Armor {
 public:
-    Chest(string name, int price, int protection, string rarity, int level, int amount) : Armor(name, price, protection, rarity, level, amount) {}
+    Chest(string name, int price, int protection, string rarity, int level) : Armor(name, price, protection, rarity, level) {}
 };
 class Pants : public Armor {
 public:
-    Pants(string name, int price, int protection, string rarity, int level, int amount) : Armor(name, price, protection, rarity, level, amount) {}
+    Pants(string name, int price, int protection, string rarity, int level) : Armor(name, price, protection, rarity, level) {}
 };
 class Boots : public Armor {
 public:
-    Boots(string name, int price, int protection, string rarity, int level, int amount) : Armor(name, price, protection, rarity, level, amount) {}
+    Boots(string name, int price, int protection, string rarity, int level) : Armor(name, price, protection, rarity, level) {}
 };
 
 class Bread : public Food {
@@ -290,13 +290,19 @@ public:
         stock.push_back(new Sword("Sword", 15, 13, "Rare", 1));
         stock.push_back(new Sword("Sword", 15, 13, "Epic", 1));
         stock.push_back(new Sword("Sword", 15, 13, "Legendary", 1));
-        stock.push_back(new Axe("Axe", 11, 12, 1));
-        stock.push_back(new Kilof("Kilof", 13, 9, 1));
-        stock.push_back(new Pan("Pan", 12, 8, 1));
-        stock.push_back(new Helmet("Helmet", 8, 9, 1));
-        stock.push_back(new Chest("Chest", 13, 15, 1));
-        stock.push_back(new Pants("Pants", 11, 13, 1));
-        stock.push_back(new Boots("Boots", 8, 7, 1));
+        stock.push_back(new Axe("Axe", 11, 12, "Common", 1));
+        stock.push_back(new Axe("Axe", 11, 12, "Rare", 1));
+        stock.push_back(new Axe("Axe", 11, 12, "Epic", 1));
+        stock.push_back(new Axe("Axe", 11, 12, "Legendary", 1));
+        stock.push_back(new Kilof("Kilof", 13, 9, "Common", 1));
+        stock.push_back(new Kilof("Kilof", 13, 9, "Common", 1));
+        stock.push_back(new Kilof("Kilof", 13, 9, "Common", 1));
+        stock.push_back(new Kilof("Kilof", 13, 9, "Common", 1));
+        stock.push_back(new Pan("Pan", 12, 8, "Common", 1));
+        stock.push_back(new Helmet("Helmet", 8, 9, "Common", 1));
+        stock.push_back(new Chest("Chest", 13, 15, "Common", 1));
+        stock.push_back(new Pants("Pants", 11, 13, "Common", 1));
+        stock.push_back(new Boots("Boots", 8, 7, "Common", 1));
         stock.push_back(new Bread("Bread", 4, 3, 40));
         stock.push_back(new Steak("Steak", 6, 5, 40));
         stock.push_back(new Apples("Apples", 4, 4, 40));
@@ -315,10 +321,10 @@ public:
             Armor* armor = dynamic_cast<Armor*>(item);
             Food* food = dynamic_cast<Food*>(item);
             if (weapon) {
-                cout << weapon->name << " - Price: " << weapon->price << ", Damage: " << weapon->damage << ", Amount: " << weapon->amount << endl;
+                cout << weapon->name << " - Price: " << weapon->price << ", Damage: " << weapon->damage << ", Rarity: " << weapon->rarity << endl;
             }
             else if (armor) {
-                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Amount: " << armor->amount << endl;
+                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Rarity: " << weapon->rarity << endl;
             }
             else if (food) {
                 cout << food->name << " - Price: " << food->price << ", Healing: " << food->healing << ", Amount: " << food->amount << endl;
@@ -345,8 +351,8 @@ public:
         armor = nullptr;
         eq = new Equipment();
 
-        eq->getGrid()[0][0] = new Sword("Sword", 15, 13, 1);
-        eq->getGrid()[0][1] = new Kilof("Kilof", 13, 9, 1);
+        eq->getGrid()[0][0] = new Sword("Sword", 15, 13, "Common", 1);
+        eq->getGrid()[0][1] = new Kilof("Kilof", 13, 9, "Common", 1);
         eq->getGrid()[0][2] = new Carrots("Carrots", 3, 3, 40);
     }
 
@@ -406,7 +412,6 @@ public:
 
     void displayEquippedArmor() {
         if (!armorPieces.empty()) {
-            // cout << "Equipped Armor:" << endl;
             for (auto armor : armorPieces) {
                 cout << armor->name << endl;
             }
@@ -542,8 +547,8 @@ int main()
     // P.displayPlayerStats();
     // P.move(0, 0, 3, 2);
     // P.move(0, 1, 2, 4);
-    P.showDetails(0, 2);
-    // P.sortEquipment();
+    // P.showDetails(0, 2);
+    P.sortEquipment();
     // P.extendEq();
     P.showEq();
     return 0;
