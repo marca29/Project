@@ -236,37 +236,37 @@ public:
     vector<Item*> stock;
     Shop() {
         stock.push_back(new Sword("Sword", 15, 13, "Common", 1));
-        stock.push_back(new Sword("Sword", 20, 13, "Rare", 1));
-        stock.push_back(new Sword("Sword", 25, 13, "Epic", 1));
-        stock.push_back(new Sword("Sword", 30, 13, "Legendary", 1));
+        stock.push_back(new Sword("Sword", 20, 18, "Rare", 1));
+        stock.push_back(new Sword("Sword", 25, 23, "Epic", 1));
+        stock.push_back(new Sword("Sword", 30, 28, "Legendary", 1));
         stock.push_back(new Axe("Axe", 11, 12, "Common", 1));
-        stock.push_back(new Axe("Axe", 16, 12, "Rare", 1));
-        stock.push_back(new Axe("Axe", 21, 12, "Epic", 1));
-        stock.push_back(new Axe("Axe", 26, 12, "Legendary", 1));
+        stock.push_back(new Axe("Axe", 16, 17, "Rare", 1));
+        stock.push_back(new Axe("Axe", 21, 22, "Epic", 1));
+        stock.push_back(new Axe("Axe", 26, 27, "Legendary", 1));
         stock.push_back(new Kilof("Kilof", 13, 9, "Common", 1));
-        stock.push_back(new Kilof("Kilof", 18, 9, "Rare", 1));
-        stock.push_back(new Kilof("Kilof", 23, 9, "Epic", 1));
-        stock.push_back(new Kilof("Kilof", 28, 9, "Legendary", 1));
+        stock.push_back(new Kilof("Kilof", 18, 14, "Rare", 1));
+        stock.push_back(new Kilof("Kilof", 23, 19, "Epic", 1));
+        stock.push_back(new Kilof("Kilof", 28, 24, "Legendary", 1));
         stock.push_back(new Pan("Pan", 12, 8, "Common", 1));
-        stock.push_back(new Pan("Pan", 17, 8, "Rare", 1));
-        stock.push_back(new Pan("Pan", 22, 8, "Epic", 1));
-        stock.push_back(new Pan("Pan", 27, 8, "Legendary", 1));
+        stock.push_back(new Pan("Pan", 17, 13, "Rare", 1));
+        stock.push_back(new Pan("Pan", 22, 18, "Epic", 1));
+        stock.push_back(new Pan("Pan", 27, 23, "Legendary", 1));
         stock.push_back(new Helmet("Helmet", 8, 9, "Common", 1));
         stock.push_back(new Helmet("Helmet", 13, 9, "Rare", 1));
         stock.push_back(new Helmet("Helmet", 18, 9, "Epic", 1));
         stock.push_back(new Helmet("Helmet", 23, 9, "Legendary", 1));
         stock.push_back(new Chest("Chest", 13, 15, "Common", 1));
-        stock.push_back(new Chest("Chest", 18, 15, "Rare", 1));
-        stock.push_back(new Chest("Chest", 23, 15, "Epic", 1));
-        stock.push_back(new Chest("Chest", 18, 15, "Legendary", 1));
+        stock.push_back(new Chest("Chest", 18, 20, "Rare", 1));
+        stock.push_back(new Chest("Chest", 23, 25, "Epic", 1));
+        stock.push_back(new Chest("Chest", 28, 30, "Legendary", 1));
         stock.push_back(new Pants("Pants", 11, 13, "Common", 1));
-        stock.push_back(new Pants("Pants", 16, 13, "Rare", 1));
-        stock.push_back(new Pants("Pants", 21, 13, "Epic", 1));
-        stock.push_back(new Pants("Pants", 26, 13, "Legendary", 1));
+        stock.push_back(new Pants("Pants", 16, 18, "Rare", 1));
+        stock.push_back(new Pants("Pants", 21, 23, "Epic", 1));
+        stock.push_back(new Pants("Pants", 26, 28, "Legendary", 1));
         stock.push_back(new Boots("Boots", 8, 7, "Common", 1));
-        stock.push_back(new Boots("Boots", 13, 7, "Rare", 1));
-        stock.push_back(new Boots("Boots", 18, 7, "Epic", 1));
-        stock.push_back(new Boots("Boots", 23, 7, "Legendary", 1));
+        stock.push_back(new Boots("Boots", 13, 12, "Rare", 1));
+        stock.push_back(new Boots("Boots", 18, 17, "Epic", 1));
+        stock.push_back(new Boots("Boots", 23, 22, "Legendary", 1));
         stock.push_back(new Bread("Bread", 4, 3, 40));
         stock.push_back(new Steak("Steak", 6, 5, 40));
         stock.push_back(new Apples("Apples", 4, 4, 40));
@@ -479,6 +479,30 @@ public:
         }
     }
 
+    bool upgradeItem(int i, int j) {
+        int upgradePrice = 20; // Cena ulepszenia
+        if (i >= 0 && i < eq->getRows() && j >= 0 && j < eq->getCols()) {
+            Item* item = eq->getGrid()[i][j];
+            if (item != nullptr) {
+                if (gold >= upgradePrice) {
+                    item->level++;
+                    gold -= upgradePrice;
+                    cout << "Item upgraded successfully!" << endl;
+                    return true;
+                } else {
+                    cout << "Insufficient gold to upgrade the item." << endl;
+                    return false;
+                }
+            } else {
+                cout << "No item found at position (" << i << ", " << j << ") in the player's equipment." << endl;
+                return false;
+            }
+        } else {
+            cout << "Invalid position (" << i << ", " << j << ") in the player's equipment." << endl;
+            return false;
+        }
+    }
+
     void showEq() {
         eq->display();
     }
@@ -523,16 +547,20 @@ int main()
     // P.setMainArmor(0, 3);
     // P.setMainArmor(0, 4);
     // P.setMainWeapon(2, 0);
-    // P.buy("Sword");
+     P.buy("Helmet");
     // P.sellItem(0, 4);
     // P.displayPlayerStats();
-    P.move(0, 0, 3, 2);
-    P.move(0, 1, 2, 4);
-    P.showEq();
+    // P.move(0, 0, 3, 2);
+    // P.move(0, 1, 2, 4);
+    // P.showEq();
     // P.showDetails(0, 2);
     // P.deleteItem(0, 1);
-    P.sortEquipment();
+    // P.sortEquipment();
     // P.extendEq();
-    P.showEq();
+    P.displayPlayerStats();
+    P.upgradeItem(0,0);
+    // P.showEq();
+    P.displayPlayerStats();
+    P.showDetails(0, 3);
     return 0;
 }
