@@ -338,14 +338,15 @@ public:
             if (weapon) {
                 cout << weapon->name << " - Price: " << weapon->price << ", Damage: " << weapon->damage << ", Rarity: " << weapon->rarity << endl;
             }
-            else if (armor) {
-                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Rarity: " << weapon->rarity << endl;
+            if (armor) {
+                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Rarity: " << armor->rarity << endl;
             }
-            else if (food) {
+            if (food) {
                 cout << food->name << " - Price: " << food->price << ", Healing: " << food->healing << ", Amount: " << food->amount << endl;
             }
         }
     }
+
 };
 
 class Player {
@@ -490,21 +491,18 @@ public:
     void showDetails(int row, int col) {
         bool found = false;
         if (row >= 0 && row < eq->getRows() && col >= 0 && col < eq->getCols()) {
-            string itemName = eq->getGrid()[row][col]->name;
+            Item* item = eq->getGrid()[row][col];
+            string itemName = item->name;
             cout << "Details of item \"" << itemName << "\" at Row: " << row << ", Col: " << col << endl;
 
-            Weapon* weapon = dynamic_cast<Weapon*>(eq->getGrid()[row][col]);
-            if (weapon) {
-                cout << "Type: Weapon, ";
-                cout << "Damage: " << weapon->damage << ", ";
-            } else {
-                cout << "Type: Item, ";
+            if (Weapon* weapon = dynamic_cast<Weapon*>(item)) {
+                weapon->showDetails();
+            } else if (Armor* armor = dynamic_cast<Armor*>(item)) {
+                armor->showDetails();
+            } else if (Food* food = dynamic_cast<Food*>(item)) {
+                food->showDetails();
             }
-
-            cout << "Price: " << eq->getGrid()[row][col]->price << ", ";
-            cout << "Amount: " << eq->getGrid()[row][col]->amount << ", ";
-            cout << "Rarity: " << eq->getGrid()[row][col]->rarity << ", ";
-            cout << "Level: " << eq->getGrid()[row][col]->level << endl;
+            cout << endl;
 
             found = true;
         }
@@ -550,9 +548,9 @@ int main()
 {
     Player P;
     P.showEq();
-    // P.displayShop();
-    P.buy("Chest");
-    P.buy("Boots");
+    P.displayShop();
+    // P.buy("Chest");
+    // P.buy("Boots");
     // P.setMainWeapon(0, 0);
     // P.setMainArmor(0, 3);
     // P.setMainArmor(0, 4);
@@ -563,8 +561,8 @@ int main()
     // P.move(0, 0, 3, 2);
     // P.move(0, 1, 2, 4);
     // P.showDetails(0, 2);
-    P.sortEquipment();
+    // P.sortEquipment();
     // P.extendEq();
-    P.showEq();
+    // P.showEq();
     return 0;
 }
