@@ -171,16 +171,6 @@ public:
         return grid;
     }
 
-    bool deleteItem(int r, int c) {
-        if(grid[r][c] == nullptr) {
-            return false;
-        }
-
-        delete grid[r][c];
-        grid[r][c] = nullptr;
-        return true;
-    }
-
     bool levelUp(int r, int c) {
         if(grid[r][c] == nullptr) {
             return false;
@@ -190,59 +180,18 @@ public:
         return true;
     }
 
-    Item* getItem(int row, int col) {
-        if(row <= rows && col <= cols)
-            return grid[row][col];
-        else
-            return nullptr;
-    }
-
-    bool nullItem(int row, int col) {
-        if(row > rows && col > cols) {
-            return false;
+    void sort() {
+        int index = 0;
+        for (int row = 0; row < getRows(); ++row) {
+            for (int col = 0; col < getCols(); ++col) {
+                if (grid[row][col]->name != " ") {
+                    Item* temp = grid[row][col];
+                    grid[row][col] = grid[index / getCols()][index % getCols()];
+                    grid[index / getCols()][index % getCols()] = temp;
+                    ++index;
+                }
+            }
         }
-        grid[row][col] = nullptr;
-        return true;
-    }
-
-    void sort(bool asc = false) {
-        auto getMaxIndices = [this](int startR, int startC) -> vector<int> {
-            int rowMax = startR;
-            int colMax = startC;
-            bool foundNonNull = false;
-            for(int i = startR; i < rows; i++) {
-                for(int j = startC; j < cols; j++) {
-                    if(grid[i][j] != nullptr) {
-                        if(!foundNonNull || (grid[i][j]->level >= grid[rowMax][colMax]->level)) {
-                            rowMax = i;
-                            colMax = j;
-                            foundNonNull = true;
-                        }
-                    }
-                }
-            }
-
-            return {rowMax, colMax};
-        };
-
-        auto getMinIndices = [this](int startR, int startC) -> vector<int> {
-            int rowMin = startR;
-            int colMin = startC;
-            bool foundNonNull = false;
-            for(int i = startR; i < rows; i++) {
-                for(int j = startC; j < cols; j++) {
-                    if(grid[i][j] != nullptr) {
-                        if(!foundNonNull || (grid[i][j]->level <= grid[rowMin][colMin]->level)) {
-                            rowMin = i;
-                            colMin = j;
-                            foundNonNull = true;
-                        }
-                    }
-                }
-            }
-
-            return {rowMin, colMin};
-        };
     }
 
     void extendEquipment() {
@@ -466,6 +415,25 @@ public:
         return nullptr;
     }
 
+    void deleteItem(int i, int j) {
+        bool found = false;
+        for(int row = 0; row < eq->getRows(); row++) {
+            for(int col = 0; col < eq->getCols(); col++) {
+                if (row == i && col == j && eq->getGrid()[row][col]->name != " ") {
+                    string itemName = eq->getGrid()[row][col]->name;
+                    cout << "You dropped " << itemName << " from your equipment." << endl;
+                    delete eq->getGrid()[row][col];
+                    eq->getGrid()[row][col] = new Item(" ");
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+        if (!found) {
+            cout << "Item not found at position (" << i << ", " << j << ") in your equipment." << endl;
+        }
+    }
 
     void sellItem(int row, int col) {
         bool found = false;
@@ -511,8 +479,6 @@ public:
         }
     }
 
-
-
     void showEq() {
         eq->display();
     }
@@ -539,6 +505,8 @@ public:
     void extendEq() {
         eq->extendEquipment();
     }
+
+
     ~Player() {
         delete eq;
     }
@@ -547,8 +515,8 @@ public:
 int main()
 {
     Player P;
-    P.showEq();
-    P.displayShop();
+    // P.showEq();
+    // P.displayShop();
     // P.buy("Chest");
     // P.buy("Boots");
     // P.setMainWeapon(0, 0);
@@ -558,11 +526,13 @@ int main()
     // P.buy("Sword");
     // P.sellItem(0, 4);
     // P.displayPlayerStats();
-    // P.move(0, 0, 3, 2);
-    // P.move(0, 1, 2, 4);
+    P.move(0, 0, 3, 2);
+    P.move(0, 1, 2, 4);
+    P.showEq();
     // P.showDetails(0, 2);
-    // P.sortEquipment();
+    // P.deleteItem(0, 1);
+    P.sortEquipment();
     // P.extendEq();
-    // P.showEq();
+    P.showEq();
     return 0;
 }
