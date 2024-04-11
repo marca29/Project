@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <map>
+
 using namespace std;
 
 map<string, int> rarityMap = {
@@ -23,7 +24,7 @@ public:
     Item(string name, int price) : name{name}, price{price} {}
     Item(string name, int price, int amount) : name{name}, price{price}, amount{amount} {}
     Item(string name, int price, string rarity, int level) : name{name}, price{price}, rarity{rarity}, level{level} {}
-    virtual ~Item() {} //Wirtualny destruktor pozwala na właściwe usuwanie obiektów dziedziczących.
+    virtual ~Item() {} // Virtual destructor allows proper deletion of derived objects.
 
     void showDetails() const {
         cout << "Name: " << name << ", Price: " << price << ", Amount: " << amount << endl;
@@ -171,15 +172,6 @@ public:
         return grid;
     }
 
-    bool levelUp(int r, int c) {
-        if(grid[r][c] == nullptr) {
-            return false;
-        }
-
-        grid[r][c]->level++;
-        return true;
-    }
-
     void sort() {
         int index = 0;
         for (int row = 0; row < getRows(); ++row) {
@@ -195,31 +187,31 @@ public:
     }
 
     void extendEquipment() {
-        // Create a new grid with one extra row and column
+
         Item*** newGrid = new Item**[rows + 1];
         for(int i = 0; i < rows + 1; i++) {
             newGrid[i] = new Item*[cols + 1];
         }
-        // Copy existing items to the new grid
+
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < cols; j++) {
                 newGrid[i][j] = grid[i][j];
             }
         }
-        // Initialize new row and column with empty items
+
         for(int i = 0; i < rows + 1; i++) {
             newGrid[i][cols] = new Item(" ");
         }
         for(int j = 0; j < cols + 1; j++) {
             newGrid[rows][j] = new Item(" ");
         }
-        // Delete old grid and update grid pointer
+
         for(int i = 0; i < rows; i++) {
             delete[] grid[i];
         }
         delete[] grid;
         grid = newGrid;
-        // Update rows and cols
+
         rows++;
         cols++;
     }
@@ -331,28 +323,34 @@ public:
         }
     }
     void setMainArmor(int i, int j) {
+        int copyHP = HP;
         bool found = false;
         for (int row = 0; row < eq->getRows(); row++) {
             for (int col = 0; col < eq->getCols(); col++) {
                 if (row == i && col == j && dynamic_cast<Armor*>(eq->getGrid()[row][col])) {
                     string armorName = eq->getGrid()[row][col]->name;
-                    // Check if the armor is not already equipped
+
+                    bool alreadyEquipped = false;
                     for (auto armor : armorPieces) {
                         if (armor->name == armorName) {
-                            found = true;
+                            alreadyEquipped = true;
                             break;
                         }
                     }
 
-                    if (!found) {
-                        // Equip the armor
-                        armorPieces.push_back(dynamic_cast<Armor*>(eq->getGrid()[row][col]));
+                    if (!alreadyEquipped) {
+                        Armor* armorToEquip = dynamic_cast<Armor*>(eq->getGrid()[row][col]);
+                        armorPieces.push_back(armorToEquip);
                         cout << "Equipped: " << armorName << endl;
+                        copyHP += armorToEquip->protection;
+                        found = true;
+
+                        delete eq->getGrid()[row][col];
+                        eq->getGrid()[row][col] = new Item(" ");
                     } else {
                         cout << "You already have equipped " << armorName << endl;
                     }
 
-                    found = true; // Set found to true as the armor was found
                     break;
                 }
             }
@@ -362,6 +360,8 @@ public:
             cout << "Armor not found at position (" << i << ", " << j << ") in the player's equipment." << endl;
         }
     }
+
+
 
     bool move(int r1, int c1, int r2, int c2) {
         if(eq->getGrid()[r1][c1] == nullptr) {
@@ -386,14 +386,14 @@ public:
     }
 
 
-    Item* buy(const string& itemName) {
-        for (size_t i = 0; i < shop.stock.size(); ++i) {
-            if (shop.stock[i]->name == itemName) {
+
+    Item* buy(const string& itemName, const string& rarity) {
+        for (int i = 0; i < shop.stock.size(); ++i) {
+            if (shop.stock[i]->name == itemName && shop.stock[i]->rarity == rarity) {
                 if (gold >= shop.stock[i]->price) {
                     cout << "You bought " << shop.stock[i]->name << " for " << shop.stock[i]->price << " gold." << endl;
                     gold -= shop.stock[i]->price;
 
-                    // Dodaj zakupiony przedmiot do ekwipunku gracza
                     for(int row = 0; row < eq->getRows(); row++) {
                         for(int col = 0; col < eq->getCols(); col++) {
                             if (eq->getGrid()[row][col]->name == " ") {
@@ -457,30 +457,30 @@ public:
     }
 
     void showDetails(int row, int col) {
-        bool found = false;
         if (row >= 0 && row < eq->getRows() && col >= 0 && col < eq->getCols()) {
             Item* item = eq->getGrid()[row][col];
-            string itemName = item->name;
-            cout << "Details of item \"" << itemName << "\" at Row: " << row << ", Col: " << col << endl;
+            if (item->name != " ") {
+                string itemName = item->name;
+                cout << "Details of item \"" << itemName << "\"" << endl;
 
-            if (Weapon* weapon = dynamic_cast<Weapon*>(item)) {
-                weapon->showDetails();
-            } else if (Armor* armor = dynamic_cast<Armor*>(item)) {
-                armor->showDetails();
-            } else if (Food* food = dynamic_cast<Food*>(item)) {
-                food->showDetails();
+                if (Weapon* weapon = dynamic_cast<Weapon*>(item)) {
+                    weapon->showDetails();
+                }
+                if (Armor* armor = dynamic_cast<Armor*>(item)) {
+                    armor->showDetails();
+                }
+                if (Food* food = dynamic_cast<Food*>(item)) {
+                    food->showDetails();
+                }
+                cout << endl;
             }
-            cout << endl;
-
-            found = true;
-        }
-        if (!found) {
-            cout << "Item not found at position (" << row << ", " << col << ") in the player's equipment." << endl;
+            else {
+                cout << "Item not found at position (" << row << ", " << col << ") in the player's equipment." << endl;
+            }
         }
     }
-
-    bool upgradeItem(int i, int j) {
-        int upgradePrice = 20; // Cena ulepszenia
+    bool levelUp(int i, int j) {
+        int upgradePrice = 20;
         if (i >= 0 && i < eq->getRows() && j >= 0 && j < eq->getCols()) {
             Item* item = eq->getGrid()[i][j];
             if (item != nullptr) {
@@ -503,6 +503,7 @@ public:
         }
     }
 
+
     void showEq() {
         eq->display();
     }
@@ -511,7 +512,17 @@ public:
         shop.displayStock();
     }
     void displayPlayerStats() {
-        cout << "HP: " << HP << endl;
+        cout << "HP: ";
+        if (!armorPieces.empty()) {
+            int totalProtection = 0;
+            for (auto armor : armorPieces) {
+                totalProtection += armor->protection;
+            }
+            cout << HP + totalProtection << endl;
+        } else {
+            cout << HP << endl;
+        }
+
         cout << "Gold: " << gold << endl;
         cout << (mainHand != nullptr ? "Main weapon: " + mainHand->name : "Main weapon: none") << endl;
         cout << "Main armor: ";
@@ -523,6 +534,7 @@ public:
         cout << endl;
         eq->display();
     }
+
     void sortEquipment() {
         eq->sort();
     }
@@ -534,33 +546,148 @@ public:
     ~Player() {
         delete eq;
     }
+
 };
 
 int main()
 {
     Player P;
-    // P.showEq();
-    // P.displayShop();
-    // P.buy("Chest");
-    // P.buy("Boots");
-    // P.setMainWeapon(0, 0);
-    // P.setMainArmor(0, 3);
-    // P.setMainArmor(0, 4);
-    // P.setMainWeapon(2, 0);
-     P.buy("Helmet");
-    // P.sellItem(0, 4);
-    // P.displayPlayerStats();
-    // P.move(0, 0, 3, 2);
-    // P.move(0, 1, 2, 4);
-    // P.showEq();
-    // P.showDetails(0, 2);
-    // P.deleteItem(0, 1);
-    // P.sortEquipment();
-    // P.extendEq();
-    P.displayPlayerStats();
-    P.upgradeItem(0,0);
-    // P.showEq();
-    P.displayPlayerStats();
-    P.showDetails(0, 3);
+    cout << "Help - h" << endl;
+    while (true) {
+        char ch;
+        int row1;
+        int col1;
+        int row2;
+        int col2;
+        string itemName;
+        string rarity;
+
+        cout << "Enter operratrion: ";
+        cin >> ch;
+
+        if (ch == 'h') {
+            cout << "Menu:" << endl;
+            cout << "Move - m" << endl;
+            cout << "Buy - b" << endl;
+            cout << "Sell - s" << endl;
+            cout << "Delete - d" << endl;
+            cout << "Level up - l" << endl;
+            cout << "Set main weapon - w" << endl;
+            cout << "Set main armor - a" << endl;
+            cout << "Show details - t" << endl;
+            cout << "Display player statistic - p" << endl;
+            cout << "Display shop - o" << endl;
+            cout << "Show equipment - e" << endl;
+            cout << "Extend equipment - q" << endl;
+            cout << "Sort - r" << endl;
+            cout << "Exit - x" << endl;
+        }
+        if (ch == 'm') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            cout << "Enter row2:";
+            cin >> row2;
+            cout << "Enter col2:";
+            cin >> col2;
+            system("clear || cls");
+            P.move(row1, col1, row2, col2);
+        }
+        if (ch == 'b') {
+            system("clear || cls");
+            cout << "Enter name of item: ";
+            cin >> itemName;
+            cout << "Enter rarity of item: ";
+            cin >> rarity;
+            system("clear || cls");
+            P.buy(itemName, rarity);
+        }
+        if (ch == 's') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.sellItem(row1, col1);
+        }
+        if (ch == 'd') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.deleteItem(row1, col1);
+        }
+        if (ch == 'l') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.levelUp(row1, col1);
+        }
+        if (ch == 'w') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.setMainWeapon(row1, col1);
+        }
+        if (ch == 'a') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.setMainArmor(row1, col1);
+        }
+        if (ch == 't') {
+            system("clear || cls");
+            P.showEq();
+            cout << "Enter row1:";
+            cin >> row1;
+            cout << "Enter col1:";
+            cin >> col1;
+            system("clear || cls");
+            P.showDetails(row1, col1);
+        }
+        if (ch == 'p') {
+            system("clear || cls");
+            P.displayPlayerStats();
+        }
+        if (ch == 'o') {
+            system("clear || cls");
+            P.displayShop();
+        }
+        if (ch == 'e') {
+            system("clear || cls");
+            P.showEq();
+        }
+        if (ch == 'q') {
+            system("clear || cls");
+            P.extendEq();
+        }
+        if (ch == 'r') {
+            system("clear || cls");
+            P.sortEquipment();
+        }
+        else if (ch == 'x') {
+            break;
+        }
+    }
     return 0;
 }
