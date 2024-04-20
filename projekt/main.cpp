@@ -272,22 +272,58 @@ public:
     }
 
     void displayStock() {
+        vector<Weapon*> weapons;
+        vector<Armor*> armors;
+        vector<Food*> foods;
+    
         for (auto& item : stock) {
             Weapon* weapon = dynamic_cast<Weapon*>(item);
             Armor* armor = dynamic_cast<Armor*>(item);
             Food* food = dynamic_cast<Food*>(item);
             if (weapon) {
-                cout << weapon->name << " - Price: " << weapon->price << ", Damage: " << weapon->damage << ", Rarity: " << weapon->rarity << endl;
+                weapons.push_back(weapon);
             }
             if (armor) {
-                cout << armor->name << " - Price: " << armor->price << ", Protection: " << armor->protection << ", Rarity: " << armor->rarity << endl;
+                armors.push_back(armor);
             }
             if (food) {
-                cout << food->name << " - Price: " << food->price << ", Healing: " << food->healing << ", Amount: " << food->amount << endl;
+                foods.push_back(food);
             }
         }
+    
+        cout << "\t\t\t" << "[WEAPON]" << "\t\t\t\t\t\t\t\t" << "[ARMOR]" << endl;
+        size_t maxItems = max(weapons.size(), armors.size());
+        for (size_t i = 0; i < maxItems; ++i) {
+            if (i < weapons.size()) {
+                Weapon* weapon = weapons[i];
+                cout << "[" << weapon->name << " - Price: " << weapon->price << " - Damage: " << weapon->damage << " - Rarity: " << weapon->rarity << "]";
+                if (weapon->rarity == "Legendary") {
+                    cout << "\t\t\t";
+                }
+                else if (weapon->price == 13 || weapon->price == 15) {
+                    cout << "\t\t\t";
+                }
+                else {
+                    cout << "\t\t\t\t";
+                }
+                
+            }
+    
+            if (i < armors.size()) {
+                Armor* armor = armors[i];
+                cout << "[" << armor->name << " - Price: " << armor->price << " - Protection: " << armor->protection << " - Rarity: " << armor->rarity << "]";
+            }
+            cout << endl;
+        }
+    
+        cout << endl;
+        cout << "\t\t\t" << "[FOOD]" << endl;
+        for (size_t i = 0; i < foods.size(); ++i) {
+            Food* food = foods[i];
+            cout << "[" << food->name << " - Price: " << food->price << " - Healing: " << food->healing << " - Amount: " << food->amount << "]";
+            cout << endl;
+        }
     }
-
 };
 
 class Player {
@@ -517,7 +553,6 @@ public:
         eq->display();
     }
     void displayShop() {
-        cout << "Shop stock:" << endl;
         shop.displayStock();
     }
     void displayPlayerStats() {
@@ -888,6 +923,7 @@ int main()
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
             P.sortEquipment();
             system("clear || cls");
+            cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
             cout << "Help - h" << endl;
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
             P.showEq();
