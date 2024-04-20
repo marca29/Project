@@ -293,9 +293,14 @@ public:
 class Player {
     int HP;
     int gold;
+    int copyHP;
 
     Item* mainHand;
-    Item* armor;
+    Item* mainHelmet;
+    Item* mainChest;
+    Item* mainPants;
+    Item* mainBoots;
+
     Equipment* eq;
     Shop shop;
 
@@ -303,9 +308,13 @@ class Player {
 public:
     Player() {
         HP = 100;
+        copyHP = HP;
         gold = 150;
         mainHand = nullptr;
-        armor = nullptr;
+        mainHelmet = nullptr;
+        mainChest = nullptr;
+        mainPants = nullptr;
+        mainBoots = nullptr;
         eq = new Equipment();
 
         eq->getGrid()[0][0] = new Sword("Sword", 15, 13, "Common", 1);
@@ -314,7 +323,7 @@ public:
     }
 
     void setMainWeapon(int i, int j) {
-        if (dynamic_cast<Weapon*>(eq->getGrid()[i][j])) { //dynamic_cast jest używany, aby sprawdzić, czy wskaźnik wskazuje na obiekt klasy pochodnej (np. Weapon lub Armor)
+        if (dynamic_cast<Weapon*>(eq->getGrid()[i][j]) || eq->getGrid()[i][j] == nullptr) { //dynamic_cast jest używany, aby sprawdzić, czy wskaźnik wskazuje na obiekt klasy pochodnej (np. Weapon lub Armor)
             Item* temp = mainHand;
             mainHand = eq->getGrid()[i][j];
             eq->getGrid()[i][j] = temp;
@@ -322,49 +331,51 @@ public:
             cout << "This is not a weapon!" << endl;
         }
     }
-    void setMainArmor(int i, int j) {
-        int copyHP = HP;
-        bool found = false;
-        for (int row = 0; row < eq->getRows(); row++) {
-            for (int col = 0; col < eq->getCols(); col++) {
-                if (row == i && col == j && dynamic_cast<Armor*>(eq->getGrid()[row][col])) {
-                    string armorName = eq->getGrid()[row][col]->name;
 
-                    bool alreadyEquipped = false;
-                    for (auto armor : armorPieces) {
-                        if (armor->name == armorName) {
-                            alreadyEquipped = true;
-                            break;
-                        }
-                    }
 
-                    if (!alreadyEquipped) {
-                        Armor* armorToEquip = dynamic_cast<Armor*>(eq->getGrid()[row][col]);
-                        armorPieces.push_back(armorToEquip);
-                        cout << "Equipped: " << armorName << endl;
-                        copyHP += armorToEquip->protection;
-                        found = true;
-
-                        delete eq->getGrid()[row][col];
-                        eq->getGrid()[row][col] = new Item(" ");
-                    } else {
-                        cout << "You already have equipped " << armorName << endl;
-                    }
-
-                    break;
-                }
-            }
-            if (found) break;
+    void setMainHelmet(int i, int j) {
+        if (dynamic_cast<Helmet*>(eq->getGrid()[i][j]) || eq->getGrid()[i][j] == nullptr) {
+            Item* temp = mainHelmet;
+            mainHelmet = eq->getGrid()[i][j];
+            eq->getGrid()[i][j] = temp;
+        } else {
+            cout << "This is not a helmet!" << endl;
         }
-        if (!found) {
-            cout << "Armor not found at position (" << i << ", " << j << ") in the player's equipment." << endl;
+    }
+
+    void setMainChest(int i, int j) {
+        if (dynamic_cast<Chest*>(eq->getGrid()[i][j]) || eq->getGrid()[i][j] == nullptr) {
+            Item* temp = mainChest;
+            mainChest = eq->getGrid()[i][j];
+            eq->getGrid()[i][j] = temp;
+        } else {
+            cout << "This is not a chest!" << endl;
+        }
+    }
+
+    void setMainPants(int i, int j) {
+        if (dynamic_cast<Pants*>(eq->getGrid()[i][j]) || eq->getGrid()[i][j] == nullptr) {
+            Item* temp = mainPants;
+            mainPants = eq->getGrid()[i][j];
+            eq->getGrid()[i][j] = temp;
+        } else {
+            cout << "These are not a pants!" << endl;
+        }
+    }
+
+    void setMainBoots(int i, int j) {
+        if (dynamic_cast<Boots*>(eq->getGrid()[i][j]) || eq->getGrid()[i][j] == nullptr) {
+            Item* temp = mainBoots;
+            mainBoots = eq->getGrid()[i][j];
+            eq->getGrid()[i][j] = temp;
+        } else {
+            cout << "These are not a boots!" << endl;
         }
     }
 
 
-
     bool move(int r1, int c1, int r2, int c2) {
-        if(eq->getGrid()[r1][c1] == nullptr) {
+        if(eq->getGrid()[r1][c1] == nullptr || eq->getGrid()[r2][c2]) {
             return false;
         }
 
@@ -384,8 +395,6 @@ public:
             cout << "No armor equipped." << endl;
         }
     }
-
-
 
     Item* buy(const string& itemName, const string& rarity) {
         for (int i = 0; i < shop.stock.size(); ++i) {
@@ -512,27 +521,30 @@ public:
         shop.displayStock();
     }
     void displayPlayerStats() {
-        cout << "HP: ";
-        if (!armorPieces.empty()) {
-            int totalProtection = 0;
-            for (auto armor : armorPieces) {
-                totalProtection += armor->protection;
-            }
-            cout << HP + totalProtection << endl;
-        } else {
-            cout << HP << endl;
+        int totalProtection = 0;
+        if (mainHelmet != nullptr) {
+            totalProtection += dynamic_cast<Armor*>(mainHelmet)->protection;
         }
+        if (mainChest != nullptr) {
+            totalProtection += dynamic_cast<Armor*>(mainChest)->protection;
+        }
+        if (mainPants != nullptr) {
+            totalProtection += dynamic_cast<Armor*>(mainPants)->protection;
+        }
+        if (mainBoots != nullptr) {
+            totalProtection += dynamic_cast<Armor*>(mainBoots)->protection;
+        }
+        cout << "HP: " << copyHP + totalProtection << endl;
 
         cout << "Gold: " << gold << endl;
         cout << (mainHand != nullptr ? "Main weapon: " + mainHand->name : "Main weapon: none") << endl;
-        cout << "Main armor: ";
-        if (!armorPieces.empty()) {
-            displayEquippedArmor(); // funkcja, która wyświetla szczegóły głównej zbroi
-        } else {
-            cout << "none";
-        }
-        cout << endl;
+        cout << "Main armor:" << endl;
+        cout << (mainHelmet != nullptr ? mainHelmet->name + " - " + mainHelmet->rarity : "Helmet: none") << endl;
+        cout << (mainChest != nullptr ? mainChest->name + " - " + mainChest->rarity : "Chest: none") << endl;
+        cout << (mainPants != nullptr ? mainPants->name + " - " + mainPants->rarity : "Pants: none") << endl;
+        cout << (mainBoots != nullptr ? mainBoots->name + " - " + mainBoots->rarity : "Boots: none") << endl;
     }
+
 
     void sortEquipment() {
         eq->sort();
@@ -550,13 +562,13 @@ public:
 
 int main()
 {
-    Player P;    
-    
+    Player P;
+
     cout << "Help - h" << endl;
     cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
     P.showEq();
     cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-    
+
     while (true) {
         char ch;
         int row;
@@ -567,6 +579,7 @@ int main()
         int col2;
         string itemName;
         string rarity;
+        string choice;
 
         cout << "Enter operratrion: ";
         cin >> ch;
@@ -587,7 +600,7 @@ int main()
             cout << "Extend equipment - q" << endl;
             cout << "Sort - r" << endl;
             cout << "Exit - x" << endl;
-            
+
         }
         if (ch == 'm') {
             system("clear || cls");
@@ -609,7 +622,7 @@ int main()
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
             P.showEq();
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-            
+
         }
         if (ch == 'b') {
             system("clear || cls");
@@ -644,7 +657,7 @@ int main()
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
             P.showEq();
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-        
+
         }
         if (ch == 'd') {
             system("clear || cls");
@@ -679,7 +692,7 @@ int main()
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
             P.showEq();
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-            
+
         }
         if (ch == 'w') {
             system("clear || cls");
@@ -699,21 +712,36 @@ int main()
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
         }
         if (ch == 'a') {
-            system("clear || cls");
-            cout << "Help - h" << endl;
-            cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
-            P.showEq();
-            cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-            cout << "Enter row:";
-            cin >> row;
-            cout << "Enter col:";
-            cin >> col;
-            system("clear || cls");
-            P.setMainArmor(row, col);
-            cout << "Help - h" << endl;
-            cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
-            P.showEq();
-            cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
+            cout << "What do you want equip? [helmet|chest|pants|boots] ";
+            cin >> choice;
+            if (choice == "helmet") {
+                cout << "Enter row:";
+                cin >> row;
+                cout << "Enter col:";
+                cin >> col;
+                P.setMainHelmet(row, col);
+            }
+            if (choice == "chest") {
+                cout << "Enter row:";
+                cin >> row;
+                cout << "Enter col:";
+                cin >> col;
+                P.setMainChest(row, col);
+            }
+            if (choice == "pants") {
+                cout << "Enter row:";
+                cin >> row;
+                cout << "Enter col:";
+                cin >> col;
+                P.setMainPants(row, col);
+            }
+            if (choice == "boots") {
+                cout << "Enter row:";
+                cin >> row;
+                cout << "Enter col:";
+                cin >> col;
+                P.setMainBoots(row, col);
+            }
         }
         if (ch == 't') {
             system("clear || cls");
@@ -750,7 +778,7 @@ int main()
             P.displayShop();
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
         }
-        
+
         if (ch == 'q') {
             system("clear || cls");
             cout << "Help - h" << endl;
