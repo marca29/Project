@@ -411,7 +411,7 @@ public:
 
 
     bool move(int r1, int c1, int r2, int c2) {
-        if(eq->getGrid()[r1][c1] == nullptr || eq->getGrid()[r2][c2]) {
+        if(eq->getGrid()[r1][c1] == nullptr || eq->getGrid()[r2][c2] == nullptr) {
             return false;
         }
 
