@@ -459,6 +459,35 @@ public:
         cout << "Item not found in the shop." << endl;
         return nullptr;
     }
+    
+    Item* buyFood(const string& itemName) {
+        for (int i = 0; i < shop.stock.size(); ++i) {
+            if (shop.stock[i]->name == itemName && dynamic_cast<Food*>(shop.stock[i])) {
+                if (gold >= shop.stock[i]->price) {
+                    cout << "You bought " << shop.stock[i]->name << " for " << shop.stock[i]->price << " gold." << endl;
+                    gold -= shop.stock[i]->price;
+    
+                    for(int row = 0; row < eq->getRows(); row++) {
+                        for(int col = 0; col < eq->getCols(); col++) {
+                            if (eq->getGrid()[row][col]->name == " ") {
+                                eq->getGrid()[row][col] = shop.stock[i];
+                                return shop.stock[i];
+                            }
+                        }
+                    }
+    
+                    cout << "Your inventory is full. Cannot add the purchased item." << endl;
+                    return nullptr;
+                } else {
+                    cout << "You don't have enough gold to buy " << shop.stock[i]->name << "." << endl;
+                    return nullptr;
+                }
+            }
+        }
+        cout << "Item not found in the shop." << endl;
+        return nullptr;
+    }
+
 
     void deleteItem(int i, int j) {
         bool found = false;
@@ -683,12 +712,22 @@ int main()
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
             P.showEq();
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-            cout << "Enter name of item: ";
-            cin >> itemName;
-            cout << "Enter rarity of item: ";
-            cin >> rarity;
-            system("clear || cls");
-            P.buy(itemName, rarity);
+            cout << "What do you want buy? [weapon|armor|food] ";
+            cin >> choice;
+            if (choice == "weapon" || choice == "armor") {
+                cout << "Enter name of item: ";
+                cin >> itemName;
+                cout << "Enter rarity of item: ";
+                cin >> rarity;
+                system("clear || cls");
+                P.buy(itemName, rarity);
+            } if (choice == "food") {
+                cout << "Enter name of item: ";
+                cin >> itemName;
+                system("clear || cls");
+                P.buyFood(itemName);
+            }
+            
             cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
             cout << "Help - h" << endl;
             cout << "--------------------------------------------------------EQUIPMENT--------------------------------------------------------" << endl;
