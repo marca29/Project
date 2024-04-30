@@ -118,16 +118,6 @@ class Equipment {
     Item*** grid;
     int rows;
     int cols;
-    void clear() {
-        for(int i = 0; i < rows; i++) {
-            for(int j = 0; j < cols; j++) {
-                if(grid[i][j] != nullptr) {
-                    delete grid[i][j];
-                    grid[i][j] = nullptr;
-                }
-            }
-        }
-    }
 public:
     Equipment(int rows = 5, int cols = 5) : rows{rows}, cols{cols} {
         grid = new Item**[rows];
@@ -715,14 +705,14 @@ int main()
             cout << "What do you want buy? [weapon|armor|food] ";
             cin >> choice;
             if (choice == "weapon" || choice == "armor") {
-                cout << "Enter name of item: ";
+                cout << "Enter name of item (start with a capital letter): ";
                 cin >> itemName;
-                cout << "Enter rarity of item: ";
+                cout << "Enter rarity of item (start with a capital letter): ";
                 cin >> rarity;
                 system("clear || cls");
                 P.buy(itemName, rarity);
             } if (choice == "food") {
-                cout << "Enter name of item: ";
+                cout << "Enter name of item (start with a capital letter): ";
                 cin >> itemName;
                 system("clear || cls");
                 P.buyFood(itemName);
